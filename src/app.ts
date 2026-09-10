@@ -17,9 +17,24 @@ export function createApp() {
   const app = express();
 
   app.use(helmet({ crossOriginResourcePolicy: false }));
+
+  // CLIENT_ORIGIN supports a single URL or a comma-separated list, so previews
+  // (e.g. Vercel preview deployment URLs) can be allowed alongside production.
+  const allowedOrigins = (process.env.CLIENT_ORIGIN || 'http://localhost:5173')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
+
   app.use(
     cors({
-      origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
+      origin(origin, callback) {
+        // Allow non-browser requests (curl, server-to-server, health checks) with no Origin header.
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error(`Origin ${origin} not allowed by CORS`));
+        }
+      },
       credentials: true,
     })
   );
