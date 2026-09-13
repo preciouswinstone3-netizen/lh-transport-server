@@ -75,6 +75,25 @@ export const userUpdateSchema = z.object({
   password: z.string().min(8).optional(),
 });
 
+export const profileUpdateSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(150).optional(),
+  email: z.string().email('Please enter a valid email address').optional(),
+});
+
+export const passwordChangeSchema = z.object({
+  currentPassword: z.string().min(1, 'Current password is required'),
+  newPassword: z.string().min(8, 'New password must be at least 8 characters'),
+});
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email('Please enter a valid email address'),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1, 'Reset token is required'),
+  newPassword: z.string().min(8, 'New password must be at least 8 characters'),
+});
+
 export const companySettingsSchema = z.object({
   companyName: z.string().min(1).max(200).optional(),
   logoDataUrl: z.string().max(5_000_000).optional().nullable(),

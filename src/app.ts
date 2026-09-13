@@ -16,6 +16,11 @@ import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 export function createApp() {
   const app = express();
 
+  // Vercel (and most serverless hosts) sit in front of the app as a proxy,
+  // adding an X-Forwarded-For header. Without this, express-rate-limit can't
+  // tell real visitor IPs apart and logs a warning on every request.
+  app.set('trust proxy', 1);
+
   app.use(helmet({ crossOriginResourcePolicy: false }));
 
   // CLIENT_ORIGIN supports a single URL or a comma-separated list, so previews
